@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ai_control_bridge_hardware</name>
+  <version>0.2.0</version>
+  <description>
+    Hardware interface and simulation adapters for AI Control Bridge.
+    
+    Provides hardware-specific implementations for robot integration,
+    including URDF descriptions, Gazebo simulation models, and
+    hardware abstraction layers for different robot platforms.
+  </description>
+  
+  <maintainer email="gsoc@example.com">GSoC Contributors</maintainer>
+  <license>Apache-2.0</license>
+
+  <url type="website">https://github.com/gsoc/ai-control-bridge</url>
+  <url type="repository">https://github.com/gsoc/ai-control-bridge.git</url>
+
+  <author email="author@example.com">AI Robotics Team</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Core library -->
+  <depend>ai_control_bridge_core</depend>
+
+  <!-- ROS2 dependencies -->
+  <depend>rclcpp</depend>
+  <depend>hardware_interface</depend>
+  <depend>ament_cmake</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
