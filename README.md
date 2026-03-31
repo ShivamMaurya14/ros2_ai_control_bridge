@@ -440,13 +440,6 @@ The **AI Control Bridge** solves a critical real-world problem:
 
 Apache 2.0 - See LICENSE files in each package
 
-## 🤝 Contributing
-
-Contributions welcome! Please submit PR with:
-- Clear commit messages
-- Updated documentation
-- Test coverage for new features
-
 ---
 
 **Last Updated**: 31 March , 2026
