@@ -1,0 +1,36 @@
+# ROS 2 / colcon build artifacts
+build/
+install/
+log/
+.colcon/
+
+# Local package build artifacts
+src/*/build/
+src/*/install/
+src/*/log/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.eggs/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Gazebo
+.gazebo/
+.gazebo_models/
+
+# ROS
+.ros/
+
+# CMake
+CMakeUserPresets.json
