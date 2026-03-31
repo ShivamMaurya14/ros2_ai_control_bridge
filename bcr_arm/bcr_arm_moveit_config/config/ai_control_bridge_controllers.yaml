@@ -1,0 +1,251 @@
+# AI Control Bridge + BCR ARM - ros2_control Configuration for Gazebo Simulation
+# This config enables the AI Control Bridge controller in Gazebo simulation
+# alongside standard joint state broadcasting
+
+controller_manager:
+  ros__parameters:
+    # Control loop frequency (Hz)
+    # Must match AI Control Bridge frequency (1000 Hz)
+    update_rate: 1000
+
+    # List of controllers to load
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    ai_control_bridge_controller:
+      type: ai_control_bridge_controller/AIControllerBridge
+
+    # Optional: fallback joint trajectory controller for manual control
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+################################################################################
+# Joint State Broadcaster Configuration
+# Publishes /joint_states for RViz and diagnostics
+################################################################################
+
+joint_state_broadcaster:
+  ros__parameters:
+    # No parameters needed - broadcaster auto-detects joints
+    # from the ros2_control hardware interface
+
+
+################################################################################
+# AI Control Bridge Controller Configuration
+# Real-time control loop @ 1000 Hz with AI policy execution
+################################################################################
+
+ai_control_bridge_controller:
+  ros__parameters:
+    
+    # --- Robot Configuration ---
+    robot_name: "bcr_arm"
+    namespace: "bcr_arm"
+    
+    # DOF (degrees of freedom)
+    dof: 7
+    
+    # Joint names (must match URDF exactly)
+    joint_names:
+      - "joint1"
+      - "joint2"
+      - "joint3"
+      - "joint4"
+      - "joint5"
+      - "joint6"
+      - "joint7"
+    
+    # --- Control Parameters ---
+    control:
+      frequency: 1000.0  # Hz (DO NOT CHANGE - hardcoded in controller)
+      
+      # Trajectory generation (Minimum Jerk Trajectory)
+      trajectory:
+        duration: 1.0           # Time to reach waypoint (seconds) - faster in sim
+        interpolation: "quintic"  # Smooth polynomial interpolation
+      
+      # Enable safety constraints (velocity, acceleration, jerk limits)
+      safety_enabled: true
+    
+    # --- Per-Joint Constraints for Gazebo (More Permissive than Real Hardware) ---
+    # These are relaxed limits suitable for simulation testing
+    
+    joint1_limits:
+      position:
+        min: -3.14159265
+        max: 3.14159265
+      velocity:
+        max: 3.0  # rad/s (relaxed for simulation)
+      acceleration:
+        max: 5.0  # rad/s²
+      jerk:
+        max: 15.0  # rad/s³
+    
+    joint2_limits:
+      position:
+        min: -1.57079633
+        max: 1.57079633
+      velocity:
+        max: 3.0
+      acceleration:
+        max: 5.0
+      jerk:
+        max: 15.0
+    
+    joint3_limits:
+      position:
+        min: -3.14159265
+        max: 3.14159265
+      velocity:
+        max: 3.0
+      acceleration:
+        max: 5.0
+      jerk:
+        max: 15.0
+    
+    joint4_limits:
+      position:
+        min: -3.14159265
+        max: 3.14159265
+      velocity:
+        max: 5.0  # Wrist can move faster in sim
+      acceleration:
+        max: 8.0
+      jerk:
+        max: 20.0
+    
+    joint5_limits:
+      position:
+        min: -1.57079633
+        max: 1.57079633
+      velocity:
+        max: 5.0
+      acceleration:
+        max: 8.0
+      jerk:
+        max: 20.0
+    
+    joint6_limits:
+      position:
+        min: -3.14159265
+        max: 3.14159265
+      velocity:
+        max: 5.0
+      acceleration:
+        max: 8.0
+      jerk:
+        max: 20.0
+    
+    joint7_limits:
+      position:
+        min: -3.14159265
+        max: 3.14159265
+      velocity:
+        max: 5.0
+      acceleration:
+        max: 8.0
+      jerk:
+        max: 20.0
+    
+    # --- Hardware Interface Configuration ---
+    command_interface: "position"  # Control mode (position/velocity/effort)
+    state_interfaces:
+      - "position"
+      - "velocity"
+    
+    # --- Inference/AI Policy Configuration ---
+    inference:
+      frequency: 50.0  # Hz (policy updates)
+      
+      model:
+        # Path to neural network model
+        path: "/home/shivam-maurya/Desktop/GSoC/models/policy.onnx"
+        type: "onnx"  # onnx | tensorrt | libtorch | tensorflow
+        max_time: 20.0  # ms (failure threshold)
+      
+      # Input normalization (from sensors)
+      input:
+        normalization: true
+        # Mean and std per joint (adjust based on training data)
+        mean: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        std: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+      
+      # Output post-processing (from network)
+      output:
+        scaling: true
+        scale_factor: 1.0
+        denormalize: true
+    
+    # --- ROS 2 Communication ---
+    ros2:
+      # Topic names for communication
+      topics:
+        observations_in: "/bcr_arm/observations"
+        waypoints_out: "/bcr_arm/waypoints"
+        diagnostics: "/bcr_arm/diagnostics"
+      
+      # Quality of Service settings (real-time)
+      qos:
+        reliability: "BEST_EFFORT"  # Don't wait for ACK (real-time)
+        durability: "VOLATILE"      # Transient data
+        history: "KEEP_LAST"
+        depth: 10
+      
+      # Logging configuration
+      logging:
+        level: "INFO"    # DEBUG | INFO | WARN | ERROR
+        publish_stats: true  # Publish performance metrics
+    
+    # --- Safety Configuration ---
+    safety:
+      # Watchdog: fail if no update for N milliseconds
+      watchdog:
+        timeout: 200.0  # ms (2x control period)
+        enabled: true
+      
+      # Emergency stop triggers
+      emergency_stop:
+        violation_threshold: 5  # Stop after N constraint violations
+        inference_timeout: 100.0  # Stop if inference > 100ms
+      
+      # Constraint enforcement
+      enforcement:
+        disable_recovery: false  # Try to recover from violations
+        log_violations: true     # Log to console
+        publish_violations: true # Publish to diagnostics
+
+
+################################################################################
+# Optional: Manual Joint Trajectory Controller for Testing
+# Can be used to manually command robot without AI policy
+################################################################################
+
+joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - "joint1"
+      - "joint2"
+      - "joint3"
+      - "joint4"
+      - "joint5"
+      - "joint6"
+      - "joint7"
+    
+    command_interfaces:
+      - "position"
+    
+    state_interfaces:
+      - "position"
+      - "velocity"
+    
+    # Trajectory interpolation
+    action_monitor_rate: 10.0      # Hz
+    allow_partial_joints_goal: false
+    
+    # Defaults
+    allow_integration_in_goal_trajectories: true
+    interpolation_method: "spline"  # spline | linear
+
+
+# End of AI Control Bridge Gazebo Configuration
