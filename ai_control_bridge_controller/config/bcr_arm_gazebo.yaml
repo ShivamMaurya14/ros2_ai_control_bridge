@@ -1,0 +1,243 @@
+################################################################################
+# BCR ARM - Gazebo Simulation Configuration
+# 
+# This configuration is used when running in Gazebo simulation.
+# Simulation parameters typically allow higher speeds/accelerations than real hardware.
+#
+# Generated: 2026-03-31
+################################################################################
+
+# Robot Configuration
+robot:
+  name: "bcr_arm"
+  dof: 7
+  joint_names: 
+    - "joint_1"
+    - "joint_2"
+    - "joint_3"
+    - "joint_4"
+    - "joint_5"
+    - "joint_6"
+    - "joint_7"
+  
+  # Hardware interface type (position/velocity/effort)
+  command_interface: "position"
+  
+  # Namespace for hardware interface access
+  namespace: "bcr_arm"
+  
+  # Use simulation time from Gazebo clock
+  use_sim_time: true
+
+################################################################################
+# Control Loop Parameters
+################################################################################
+
+control:
+  frequency: 1000.0  # Hz - Same as real hardware
+  
+  # Trajectory generation
+  trajectory:
+    # Can be faster in simulation
+    duration: 1.0  # seconds (vs 2.0 for real)
+    
+    # Interpolation method
+    interpolation: "quintic"
+    
+  # Safety filter enabled
+  safety_enabled: true
+
+################################################################################
+# Joint-Specific Constraints
+# More relaxed for simulation to test aggressive behaviors
+################################################################################
+
+joints:
+  joint_1:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 3.0  # Can push harder in simulation
+    acceleration:
+      max: 5.0
+    jerk:
+      max: 15.0
+    calibration_offset: 0.0
+    
+  joint_2:
+    type: "revolute"
+    position:
+      min: -1.57079633
+      max: 1.57079633
+    velocity:
+      max: 3.0
+    acceleration:
+      max: 5.0
+    jerk:
+      max: 15.0
+    calibration_offset: 0.0
+    
+  joint_3:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 3.0
+    acceleration:
+      max: 5.0
+    jerk:
+      max: 15.0
+    calibration_offset: 0.0
+    
+  joint_4:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 4.0
+    acceleration:
+      max: 8.0
+    jerk:
+      max: 20.0
+    calibration_offset: 0.0
+    
+  joint_5:
+    type: "revolute"
+    position:
+      min: -1.57079633
+      max: 1.57079633
+    velocity:
+      max: 4.0
+    acceleration:
+      max: 8.0
+    jerk:
+      max: 20.0
+    calibration_offset: 0.0
+    
+  joint_6:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 4.0
+    acceleration:
+      max: 8.0
+    jerk:
+      max: 20.0
+    calibration_offset: 0.0
+    
+  joint_7:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 4.0
+    acceleration:
+      max: 8.0
+    jerk:
+      max: 20.0
+    calibration_offset: 0.0
+
+################################################################################
+# Sensor Configuration - Ideal in simulation
+################################################################################
+
+sensors:
+  position_sensors:
+    type: "encoder"
+    resolution: 0.00001  # Higher precision in simulation
+    
+  velocity_estimation:
+    method: "encoder_differentiation"
+    filter_window: 3
+
+################################################################################
+# Inference/AI Policy Configuration
+################################################################################
+
+inference:
+  frequency: 50.0
+  
+  model:
+    path: "/home/shivam-maurya/Desktop/GSoC/models/policy.onnx"
+    type: "onnx"
+    max_time: 20.0  # Slightly more lenient in simulation
+  
+  input:
+    normalization: true
+    mean: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    std: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    
+  output:
+    scaling: true
+    scale_factor: 1.0
+    denormalize: true
+
+################################################################################
+# Calibration Parameters - Already known in simulation
+################################################################################
+
+calibration:
+  home_position:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  
+  gravity_compensation: []
+  
+  friction:
+    # Zero friction in ideal simulation
+    static: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    viscous: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+################################################################################
+# ROS 2 Communication
+################################################################################
+
+ros2:
+  topics:
+    observations_in: "/bcr_arm/observations"
+    waypoints_out: "/bcr_arm/waypoints"
+    diagnostics: "/bcr_arm/diagnostics"
+    
+  qos:
+    reliability: "BEST_EFFORT"
+    durability: "VOLATILE"
+    history: "KEEP_LAST"
+    depth: 10
+  
+  logging:
+    level: "DEBUG"  # More verbose in simulation for debugging
+    publish_stats: true
+
+################################################################################
+# Safety Thresholds - Relaxed for testing
+################################################################################
+
+safety:
+  emergency_stop:
+    violation_threshold: 10  # More lenient in simulation
+    inference_timeout: 100.0
+  
+  watchdog:
+    timeout: 100.0
+    enabled: true
+  
+  enforcement:
+    disable_recovery: false
+    log_violations: true
+    publish_violations: true
+
+################################################################################
+# End of BCR ARM Gazebo Configuration
+################################################################################

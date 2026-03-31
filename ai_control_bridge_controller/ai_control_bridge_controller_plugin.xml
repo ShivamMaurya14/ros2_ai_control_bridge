@@ -1,0 +1,15 @@
+<library path="ai_control_bridge_controller_plugin">
+  <class 
+    name="ai_control_bridge_controller::AIControllerBridge"
+    type="ai_control_bridge_controller::AIControllerBridge"
+    base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Real-time control bridge for AI policy execution.
+      
+      Bridges low-frequency AI policy outputs to high-frequency robot control
+      commands using Minimum Jerk Trajectory generation and safety constraints.
+      
+      Implements PostprocessorCore interface from ai_control_bridge_core.
+    </description>
+  </class>
+</library>

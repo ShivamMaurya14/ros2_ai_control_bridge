@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ai_control_bridge_controller</name>
+  <version>0.2.0</version>
+  <description>
+    Controller implementation for AI Control Bridge system.
+    
+    Implements the PostprocessorCore interface to bridge low-frequency AI policy 
+    outputs to high-frequency robot control commands using:
+    - Minimum Jerk Trajectory generation (C² continuous motion)
+    - Real-time safety constraint enforcement
+    - Lock-free communication with inference thread
+  </description>
+  
+  <maintainer email="gsoc@example.com">GSoC Contributors</maintainer>
+  <license>Apache-2.0</license>
+
+  <url type="website">https://github.com/gsoc/ai-control-bridge</url>
+  <url type="repository">https://github.com/gsoc/ai-control-bridge.git</url>
+  <url type="bugtracker">https://github.com/gsoc/ai-control-bridge/issues</url>
+
+  <author email="author@example.com">AI Robotics Team</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Core library -->
+  <depend>ai_control_bridge_core</depend>
+
+  <!-- ROS2 dependencies -->
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>controller_interface</depend>
+  <depend>hardware_interface</depend>
+  <depend>pluginlib</depend>
+  
+  <!-- Message types -->
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+  <!-- Build and runtime -->
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>ros2_control</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <controller_interface plugin="${prefix}/ai_control_bridge_controller_plugin.xml"/>
+  </export>
+</package>

@@ -1,0 +1,280 @@
+################################################################################
+# BCR ARM - Real Robot Configuration
+# 
+# This configuration is used when deploying on the physical BCR ARM robot.
+# Adjust these parameters for your specific hardware setup.
+#
+# Generated: 2026-03-31
+################################################################################
+
+# Robot Configuration
+robot:
+  name: "bcr_arm"
+  dof: 7
+  joint_names: 
+    - "joint_1"
+    - "joint_2"
+    - "joint_3"
+    - "joint_4"
+    - "joint_5"
+    - "joint_6"
+    - "joint_7"
+  
+  # Hardware interface type (position/velocity/effort)
+  command_interface: "position"
+  
+  # Namespace for hardware interface access
+  namespace: "bcr_arm"
+
+################################################################################
+# Control Loop Parameters
+################################################################################
+
+control:
+  frequency: 1000.0  # Hz - Standard robot control rate
+  
+  # Trajectory generation
+  trajectory:
+    # Duration to reach waypoint (seconds)
+    duration: 2.0
+    
+    # Interpolation method (linear/quintic/cubic)
+    interpolation: "quintic"
+    
+  # Safety filter enabled
+  safety_enabled: true
+
+################################################################################
+# Joint-Specific Constraints
+# These are the REAL hardware limits for BCR ARM
+################################################################################
+
+joints:
+  joint_1:
+    # Revolute joint (shoulder pan)
+    type: "revolute"
+    
+    # Position limits (radians)
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    
+    # Velocity limits (rad/s) - REAL hardware tested max
+    velocity:
+      max: 2.0
+    
+    # Acceleration limits (rad/s²)
+    acceleration:
+      max: 3.0
+    
+    # Jerk limits (rad/s³)
+    jerk:
+      max: 10.0
+    
+    # Encoder calibration offset (radians)
+    calibration_offset: 0.0
+    
+  joint_2:
+    type: "revolute"
+    position:
+      min: -1.57079633  # -90 deg
+      max: 1.57079633   # +90 deg
+    velocity:
+      max: 2.0
+    acceleration:
+      max: 3.0
+    jerk:
+      max: 10.0
+    calibration_offset: 0.0
+    
+  joint_3:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 2.0
+    acceleration:
+      max: 3.0
+    jerk:
+      max: 10.0
+    calibration_offset: 0.0
+    
+  joint_4:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 3.0  # Wrist joints can be faster
+    acceleration:
+      max: 5.0
+    jerk:
+      max: 15.0
+    calibration_offset: 0.0
+    
+  joint_5:
+    type: "revolute"
+    position:
+      min: -1.57079633
+      max: 1.57079633
+    velocity:
+      max: 3.0
+    acceleration:
+      max: 5.0
+    jerk:
+      max: 15.0
+    calibration_offset: 0.0
+    
+  joint_6:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 3.0
+    acceleration:
+      max: 5.0
+    jerk:
+      max: 15.0
+    calibration_offset: 0.0
+    
+  joint_7:
+    type: "revolute"
+    position:
+      min: -3.14159265
+      max: 3.14159265
+    velocity:
+      max: 3.0
+    acceleration:
+      max: 5.0
+    jerk:
+      max: 15.0
+    calibration_offset: 0.0
+
+################################################################################
+# Sensor Configuration
+################################################################################
+
+sensors:
+  # Joint position sensors
+  position_sensors:
+    type: "encoder"
+    resolution: 0.0001  # radians per count
+    
+  # Joint velocity estimation
+  velocity_estimation:
+    method: "finite_difference"  # or "encoder_differentiation"
+    filter_window: 5  # samples for smoothing
+    
+################################################################################
+# Inference/AI Policy Configuration
+################################################################################
+
+inference:
+  # Frequency of policy execution (Hz)
+  frequency: 50.0
+  
+  # Neural network model
+  model:
+    # Path to model file (ONNX/TensorRT/SavedModel)
+    path: "/home/shivam-maurya/Desktop/GSoC/models/policy.onnx"
+    
+    # Type: onnx | tensorrt | libtorch | tensorflow
+    type: "onnx"
+    
+    # Maximum inference time (milliseconds)
+    # Fail-safe triggers if inference exceeds this
+    max_time: 15.0
+  
+  # Input normalization (observs from sensors)
+  input:
+    normalization: true
+    mean: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  # Per joint
+    std: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    
+  # Output post-processing (waypoints to control)
+  output:
+    scaling: true
+    scale_factor: 1.0  # Multiply policy output by this
+    denormalize: true
+
+################################################################################
+# Calibration Parameters
+# These should be updated after hardware calibration
+################################################################################
+
+calibration:
+  # Home positions (radians) - tested safe configuration
+  home_position:
+    - 0.0      # joint_1
+    - 0.0      # joint_2
+    - 0.0      # joint_3
+    - 0.0      # joint_4
+    - 0.0      # joint_5
+    - 0.0      # joint_6
+    - 0.0      # joint_7
+  
+  # Gravity compensation matrix (7x7)
+  # Used to zero-out gravity effects for joint encoders
+  gravity_compensation: []
+  
+  # Friction model parameters
+  friction:
+    # Static friction per joint (Nm)
+    static: [0.1, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05]
+    
+    # Viscous friction per joint
+    viscous: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
+
+################################################################################
+# ROS 2 Communication
+################################################################################
+
+ros2:
+  # Topic names
+  topics:
+    observations_in: "/bcr_arm/observations"
+    waypoints_out: "/bcr_arm/waypoints"
+    diagnostics: "/bcr_arm/diagnostics"
+    
+  # QoS settings for real-time reliability
+  qos:
+    reliability: "BEST_EFFORT"  # Real-time doesn't wait for ACK
+    durability: "VOLATILE"
+    history: "KEEP_LAST"
+    depth: 10
+  
+  # Logging
+  logging:
+    level: "INFO"  # DEBUG | INFO | WARN | ERROR
+    publish_stats: true  # Publish performance statistics
+
+################################################################################
+# Safety Thresholds
+################################################################################
+
+safety:
+  # Emergency stop triggers
+  emergency_stop:
+    # Stop if constraint violated more than N times per second
+    violation_threshold: 5
+    
+    # Stop if inference takes longer than:
+    inference_timeout: 100.0  # milliseconds
+  
+  # Watchdog parameters
+  watchdog:
+    timeout: 100.0  # milliseconds - fails if no update for this long
+    enabled: true
+  
+  # Constraint enforcement mode
+  enforcement:
+    disable_recovery: false  # Don't attempt to recover from violations
+    log_violations: true     # Log constraint violations
+    publish_violations: true # Publish to diagnostics
+
+
+################################################################################
+# End of BCR ARM Real Robot Configuration
+################################################################################
