@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ai_control_bridge_core</name>
+  <version>0.2.0</version>
+  <description>
+    Core library providing abstract interfaces and header-only implementations 
+    for the AI Control Bridge system.
+    
+    Includes base classes for:
+    - Controller Bridge (ros2_control integration)
+    - Trajectory Generation (motion planning)
+    - Safety Constraints (limits enforcement)
+    - Realtime-safe Buffer (lock-free communication)
+    
+    Designed as a header-only library for maximum flexibility and zero overhead.
+    Supports robots with any number of joints (N-DOF generalization).
+  </description>
+  
+  <maintainer email="gsoc@example.com">GSoC Contributors</maintainer>
+  <license>Apache-2.0</license>
+
+  <url type="website">https://github.com/gsoc/ai-control-bridge</url>
+  <url type="repository">https://github.com/gsoc/ai-control-bridge.git</url>
+  <url type="bugtracker">https://github.com/gsoc/ai-control-bridge/issues</url>
+
+  <author email="author@example.com">AI Robotics Team</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Core ROS2 dependencies -->
+  <depend>rclcpp</depend>
+  <depend>controller_interface</depend>
+  <depend>hardware_interface</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
