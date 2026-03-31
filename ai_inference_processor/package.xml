@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ai_inference_processor</name>
+  <version>0.2.0</version>
+  <description>
+    ONNX model inference processor for AI policy execution.
+    
+    Implements the InferenceCore interface to run policy inference
+    at low frequency (~50 Hz) and publish waypoints to the control bridge.
+    Non-realtime, CPU or GPU-based inference execution.
+  </description>
+  
+  <maintainer email="gsoc@example.com">GSoC Contributors</maintainer>
+  <license>Apache-2.0</license>
+
+  <url type="website">https://github.com/gsoc/ai-control-bridge</url>
+  <url type="repository">https://github.com/gsoc/ai-control-bridge.git</url>
+
+  <author email="author@example.com">AI Robotics Team</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Core library -->
+  <depend>ai_control_bridge_core</depend>
+
+  <!-- ROS2 dependencies -->
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+
+  <!-- ONNX Runtime (optional - enable when available)
+  <depend>onnxruntime</depend>
+  -->
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
